@@ -2,9 +2,11 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'dummy-secret-key'
-DEBUG = True
-ALLOWED_HOSTS = []
+SECRET_KEY = 'dummy-secret-key'  # Change to a strong secret in production
+DEBUG = True  # Set to False in production
+
+# Add your Render domain and localhost for development
+ALLOWED_HOSTS = ['django-notifications-audit-2.onrender.com', 'localhost', '127.0.0.1']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -61,6 +63,10 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
-STATIC_URL = 'static/'
+# Static files settings
+STATIC_URL = '/static/'
+
+# In production, you may also set this:
+# STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
