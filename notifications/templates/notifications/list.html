@@ -1,0 +1,13 @@
+<h2>My Notifications</h2>
+<ul>
+  {% for n in notifications %}
+    <li>
+      <strong>{{ n.title }}</strong> - {{ n.message }}
+      {% if not n.is_read %}
+        <a href="{% url 'mark_as_read' n.id %}">Mark as Read</a>
+      {% endif %}
+    </li>
+  {% empty %}
+    <li>No notifications</li>
+  {% endfor %}
+</ul>
