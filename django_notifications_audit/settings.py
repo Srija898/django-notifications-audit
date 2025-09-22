@@ -1,12 +1,23 @@
 from pathlib import Path
+import os
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = 'dummy-secret-key'  # Change to a strong secret in production
 DEBUG = True  # Set to False in production
 
-# Add your Render domain and localhost for development
-ALLOWED_HOSTS = ['django-notifications-audit-2.onrender.com', 'localhost', '127.0.0.1']
+# Allow Render domains and localhost for development
+ALLOWED_HOSTS = [
+    'django-notifications-audit-2.onrender.com',
+    'django-notifications-audit-3.onrender.com',
+    'localhost',
+    '127.0.0.1',
+]
+
+# Optional: Load additional hosts from environment variable (comma-separated)
+extra_hosts = os.getenv("ALLOWED_HOSTS")
+if extra_hosts:
+    ALLOWED_HOSTS.extend(extra_hosts.split(","))
 
 INSTALLED_APPS = [
     'django.contrib.admin',
