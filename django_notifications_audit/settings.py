@@ -1,15 +1,28 @@
 from pathlib import Path
+import os
+import dj_database_url  # optional, for PostgreSQL on Render
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
+# Build paths inside the project
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'your-secret-key-here'
+# SECURITY
+SECRET_KEY = os.getenv('SECRET_KEY', 'your-fallback-secret')  # Use Render env variable
+DEBUG = False  # Production
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# Allowed hosts
+ALLOWED_HOSTS = [
+    'django-notifications-audit-4.onrender.com',  # your Render domain
+]
 
-ALLOWED_HOSTS = []
+# Optional: allow extra hosts via environment variable
+extra_hosts = os.getenv("ALLOWED_HOSTS")
+if extra_hosts:
+    ALLOWED_HOSTS.extend(extra_hosts.split(","))
+
+# CSRF trusted origins for Render HTTPS
+CSRF_TRUSTED_ORIGINS = [
+    'https://django-notifications-audit-4.onrender.com'
+]
 
 # Application definition
 INSTALLED_APPS = [
@@ -19,8 +32,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'notifications',   # your app
-    'audit_logs',      # your app
+    'notifications',
+    'audit_logs',
 ]
 
 MIDDLEWARE = [
@@ -38,7 +51,7 @@ ROOT_URLCONF = 'django_notifications_audit.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],  # Add your templates directories here if needed
+        'DIRS': [],  # Add template dirs if needed
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -53,17 +66,16 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'django_notifications_audit.wsgi.application'
 
-# Database
-# https://docs.djangoproject.com/en/4.2/ref/settings/#databases
+# Database configuration: SQLite fallback
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': dj_database_url.config(
+        default=f'sqlite:///{BASE_DIR / "db.sqlite3"}',
+        conn_max_age=600,
+        ssl_require=False  # Change to True if using PostgreSQL on Render
+    )
 }
 
 # Password validation
-# https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -80,17 +92,15 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 # Internationalization
-# https://docs.djangoproject.com/en/4.2/topics/i18n/
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_L10N = True
 USE_TZ = True
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/4.2/howto/static-files/
+# Static files
 STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'  # collectstatic will use this
 
 # Default primary key field type
-# https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
