@@ -8,14 +8,20 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('SECRET_KEY', 'dummy-fallback-secret')  # set SECRET_KEY on Render
 DEBUG = False  # Production
 
+# Allowed hosts
 ALLOWED_HOSTS = [
-    'django-notifications-audit-2.onrender.com',  # your Render domain
+    'django-notifications-audit-3.onrender.com',  # your Render domain
 ]
 
 # Optional: Load extra hosts from environment variable
 extra_hosts = os.getenv("ALLOWED_HOSTS")
 if extra_hosts:
     ALLOWED_HOSTS.extend(extra_hosts.split(","))
+
+# CSRF trusted origins (important for Render HTTPS)
+CSRF_TRUSTED_ORIGINS = [
+    'https://django-notifications-audit-3.onrender.com'
+]
 
 # Application definition
 INSTALLED_APPS = [
@@ -44,7 +50,7 @@ ROOT_URLCONF = 'django_notifications_audit.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [],  # Add templates directories if needed
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -59,10 +65,12 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'django_notifications_audit.wsgi.application'
 
-# Database
+# Database configuration: PostgreSQL on Render or fallback to SQLite
 DATABASES = {
     'default': dj_database_url.config(
-        default=f'sqlite:///{BASE_DIR / "db.sqlite3"}'
+        default=f'sqlite:///{BASE_DIR / "db.sqlite3"}',
+        conn_max_age=600,
+        ssl_require=True  # required for PostgreSQL on Render
     )
 }
 
