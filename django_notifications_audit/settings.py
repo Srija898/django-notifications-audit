@@ -1,24 +1,23 @@
 from pathlib import Path
 import os
+import dj_database_url  # for PostgreSQL on Render
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'dummy-secret-key'  # Change to a strong secret in production
-DEBUG = True  # Set to False in production
+# SECURITY
+SECRET_KEY = os.getenv('SECRET_KEY', 'dummy-fallback-secret')  # set SECRET_KEY on Render
+DEBUG = False  # Production
 
-# Allow Render domains and localhost for development
 ALLOWED_HOSTS = [
-    'django-notifications-audit-2.onrender.com',
-    'django-notifications-audit-3.onrender.com',
-    'localhost',
-    '127.0.0.1',
+    'django-notifications-audit-2.onrender.com',  # your Render domain
 ]
 
-# Optional: Load additional hosts from environment variable (comma-separated)
+# Optional: Load extra hosts from environment variable
 extra_hosts = os.getenv("ALLOWED_HOSTS")
 if extra_hosts:
     ALLOWED_HOSTS.extend(extra_hosts.split(","))
 
+# Application definition
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -60,24 +59,25 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'django_notifications_audit.wsgi.application'
 
+# Database
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': dj_database_url.config(
+        default=f'sqlite:///{BASE_DIR / "db.sqlite3"}'
+    )
 }
 
+# Password validation
 AUTH_PASSWORD_VALIDATORS = []
 
+# Internationalization
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
-# Static files settings
+# Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'  # collectstatic will use this
 
-# In production, you may also set this:
-# STATIC_ROOT = BASE_DIR / 'staticfiles'
-
+# Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
